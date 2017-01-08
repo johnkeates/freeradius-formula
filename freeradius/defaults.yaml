@@ -2,8 +2,9 @@
 # vim: ft=yaml
 freeradius:
   pkg: freeradius
-  pkg-krb: freeradius-krb5
-  pkg-ldap: freeradius-krb5
+  pkg_krb: freeradius-krb5
+  pkg_ldap: freeradius-ldap
+  pkg_postgres: freeradius-postgresql
   service:
     name: freeradius
   config-root-dir: '/etc/freeradius'

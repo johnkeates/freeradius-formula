@@ -3,5 +3,5 @@
 
 include:
   - freeradius.install
-  - freeradius.config
+  #- freeradius.config
   - freeradius.service
