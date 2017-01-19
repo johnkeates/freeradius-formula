@@ -1,0 +1,29 @@
+{% from "freeradius/map.jinja" import freeradius with context %}
+
+sqlippool {
+
+ sql-instance-name = "sql"
+
+ ippool_table = "radippool"
+ lease-duration = 3600
+
+ pool-key = "%{NAS-Port}"
+ pool-key = "%{Calling-Station-Id}"
+
+$INCLUDE sql/postgresql/ippool.conf
+
+ sqlippool_log_exists = "Existing IP: %{reply:Framed-IP-Address} \
+  (did %{Called-Station-Id} cli %{Calling-Station-Id} port %{NAS-Port} user %{User-Name})"
+
+ sqlippool_log_success = "Allocated IP: %{reply:Framed-IP-Address} from %{control:Pool-Name} \
+  (did %{Called-Station-Id} cli %{Calling-Station-Id} port %{NAS-Port} user %{User-Name})"
+
+ sqlippool_log_clear = "Released IP %{Framed-IP-Address}\
+ (did %{Called-Station-Id} cli %{Calling-Station-Id} user %{User-Name})"
+
+ sqlippool_log_failed = "IP Allocation FAILED from %{control:Pool-Name} \
+  (did %{Called-Station-Id} cli %{Calling-Station-Id} port %{NAS-Port} user %{User-Name})"
+
+ sqlippool_log_nopool = "No Pool-Name defined \
+  (did %{Called-Station-Id} cli %{Calling-Station-Id} port %{NAS-Port} user %{User-Name})"
+}

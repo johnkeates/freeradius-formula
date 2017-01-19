@@ -1,0 +1,163 @@
+{% from "freeradius/map.jinja" import freeradius with context %}
+
+prefix = /usr
+exec_prefix = /usr
+sysconfdir = /etc
+localstatedir = /var
+sbindir = ${exec_prefix}/sbin
+logdir = /var/log/freeradius
+raddbdir = /etc/freeradius
+radacctdir = ${logdir}/radacct
+
+name = freeradius
+
+confdir = ${raddbdir}
+run_dir = ${localstatedir}/run/${name}
+
+db_dir = ${raddbdir}
+
+
+libdir = /usr/lib/freeradius
+
+pidfile = ${run_dir}/${name}.pid
+chroot = /path/to/chroot/directory
+
+user = freerad
+group = freerad
+
+
+panic_action = "gdb %e %p"
+
+
+max_request_time = 30
+
+
+cleanup_delay = 5
+
+
+max_requests = 1024
+
+listen {
+
+	type = auth
+
+	ipaddr = *
+
+	#  OR, you can use an IPv6 address, but not both
+	#  at the same time.
+#	ipv6addr = ::	# any.  ::1 == localhost
+
+	port = 0
+	#
+#	interface = eth0
+#	clients = per_socket_clients
+}
+
+#  This second "listen" section is for listening on the accounting
+#  port, too.
+#
+listen {
+	ipaddr = *
+#	ipv6addr = ::
+	port = 0
+	type = acct
+#	interface = eth0
+#	clients = per_socket_clients
+}
+
+hostname_lookups = no
+
+
+allow_core_dumps = no
+regular_expressions	= yes
+extended_expressions	= yes
+
+
+log {
+
+	destination = files
+
+	file = ${logdir}/radius.log
+	#requests = ${logdir}/radiusd-%{%{Virtual-Server}:-DEFAULT}-%Y%m%d.log
+
+	syslog_facility = daemon
+
+	stripped_names = no
+
+
+	auth = no
+	auth_badpass = no
+	auth_goodpass = no
+#	msg_goodpass = ""
+#	msg_badpass = ""
+}
+
+checkrad = ${sbindir}/checkrad
+
+
+security {
+	max_attributes = 200
+
+	reject_delay = 1
+
+	status_server = yes
+
+	allow_vulnerable_openssl = no
+}
+
+#
+proxy_requests  = yes
+$INCLUDE proxy.conf
+
+
+$INCLUDE clients.conf
+
+
+thread pool {
+
+	start_servers = 5
+
+	max_servers = 32
+
+	min_spare_servers = 3
+	max_spare_servers = 10
+
+#	max_queue_size = 65536
+
+	max_requests_per_server = 0
+}
+
+modules {
+
+	$INCLUDE ${confdir}/modules/
+
+	$INCLUDE eap.conf
+
+#	$INCLUDE sql.conf
+
+
+#	$INCLUDE sql/mysql/counter.conf
+
+#	$INCLUDE sqlippool.conf
+}
+
+instantiate {
+
+	exec
+
+	expr
+
+
+#	daily
+	expiration
+	logintime
+
+	#redundant redundant_sql {
+	#	sql1
+	#	sql2
+	#}
+}
+$INCLUDE policy.conf
+
+$INCLUDE sites-enabled/
+

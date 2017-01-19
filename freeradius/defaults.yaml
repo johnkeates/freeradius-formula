@@ -7,8 +7,38 @@ freeradius:
   pkg_postgres: freeradius-postgresql
   service:
     name: freeradius
+    user: freerad
+    group: freerad
   config-root-dir: '/etc/freeradius'
   config-files:
+    sql:
+      filename: sql.conf # Filename relative to config root directory
+      driver: "rlm_sql_${database}"
+      acct_table1: "radacct"
+      acct_table2: "radacct"
+      postauth_table: "radpostauth"
+      authcheck_table: "radcheck"
+      authreply_table: "radreply"
+      groupcheck_table: "radgroupcheck"
+      groupreply_table: "radgroupreply"
+      usergroup_table: "radusergroup"
+      driver: "rlm_sql_${database}" # Default driver is simply rlm_sql_ suffixed with the database type
+
+      
+    ## TODO: remove all non-default and required entries here and remove all defaults from freeradius.sls
+      
+
+      read_groups: = yes
+      deletestalesessions: = yes
+      sqltrace: = no
+      sqltracefile: = ${logdir}/sqltrace.sql
+      num_sql_socks: = ${thread[pool].max_servers}
+      connect_failure_retry_delay: = 60
+      lifetime: = 0
+      max_queries: = 0
+      readclients: = no
+      nas_table: = "nas"
+
     acct_users: acct_users
     attrs: attrs
     attrs.access_challenge: attrs.access_challenge
@@ -27,7 +57,7 @@ freeradius:
     preproxy_users: preproxy_users
     proxy.conf: proxy.conf
     radiusd.conf: radiusd.conf
-    sql.conf: sql.conf
+    
     sqlippool.conf: sqlippool.conf
     templates.conf: templates.conf
     users: users

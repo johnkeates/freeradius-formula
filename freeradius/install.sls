@@ -7,19 +7,19 @@ freeradius-pkg:
   pkg.installed:
     - name: {{ freeradius.pkg }}
 
-{% if freeradius.install.kerberos == True %}
+{% if freeradius.options.kerberos == True %}
 freeradius-pkg-kerberos:
   pkg.installed:
     - name: {{ freeradius.pkg_krb }}
 {% endif %}
 
-{% if freeradius.install.ldap == True %}
+{% if freeradius.options.ldap == True %}
 freeradius-pkg-ldap:
   pkg.installed:
     - name: {{ freeradius.pkg_ldap }}
 {% endif %}
 
-{% if freeradius.install.pgsql == True %}
+{% if freeradius.config.sql.type == "postgres" %}
 freeradius-pkg-pgsql:
   pkg.installed:
     - name: {{ freeradius.pkg_postgres }}
